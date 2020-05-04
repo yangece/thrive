@@ -90,7 +90,7 @@ RUN apt-get update \
 RUN pip3 --no-cache-dir install -U scikit-learn \
   && pip3 --no-cache-dir install scikit-image \
   && pip3 --no-cache-dir install opencv-python \
-  && pip3 install tifffile 
+  && pip3 install tifffile python3-pika
 
 RUN pip3 install keras>=2.2.4 \
   && pip3 install tensorflow
@@ -117,9 +117,11 @@ RUN pip2 install --upgrade setuptools \
 ## add the adaptor code specialized for this algorithm
 ADD rt106SpecificAdaptorCode.py rt106SpecificAdaptorDefinitions.json entrypoint.sh /rt106/
 
-ADD testDAPISeg.py /rt106/
+ADD testDAPISeg.py testTissueSeg.py learning_helpers.py CellDIVE_IO.py CellDIVE_Seg.py /rt106/
+ADD FullTissueSeg.tif nuc_0_256_img.tif /rt106/
 ADD models /rt106/
-
+ADD models/unet_models/nuc_seg_unet_model_48_sp.json /rt106/models/unet_models/nuc_seg_unet_model_48_sp.json
+ADD models/unet_models/nuc_seg_unet_model_48_sp.h5 /rt106/models/unet_models/nuc_seg_unet_model_48_sp.h5
 
 RUN mkdir -p /rt106/input && mkdir -p /rt106/output
 RUN chmod a+x /rt106/entrypoint.sh

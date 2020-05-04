@@ -12,7 +12,7 @@
 
 # Please follow the numbered steps 1-5 below.
 
-import os, glob, uuid, time, json, string, logging
+import os, glob, uuid, time, json, string, logging, subprocess
 
 # function: run_algorithm() -- Python function for marshalling your data and running your algorithm.
 # parameters:
@@ -37,27 +37,14 @@ def run_algorithm(datastore, context):
 
 
     # # Make sure we have received the needed input.  We can't do anything without the inputSeries.
-    # if (context['inputSeries'] == "" or not context['inputSeries']):
-    #     status = "ERROR_NO_INPUT_SERIES"
-    #     return { 'result' : {}, 'status' : status }
+    if (context['slide'] == "" or not context['slide']):
+        status = "ERROR_NO_INPUT_SERIES"
+        return { 'result' : {}, 'status' : status }
 
-    # input_path = context['inputSeries']
-    # #logging.info('input_path: %r' % input_path)
-    # response_retrieve = datastore.retrieve_series(input_path,'/rt106/input')
-    # #logging.info('response_retrieve: %r' % response_retrieve)
-
-    # use this as reference: https://github.com/thrive-itcr/whole-cell-segmentation/blob/master/rt106SpecificAdaptorCode.py
     input_path1 = datastore.get_pathology_primary_path(context['slide'], context['region'], 'DAPI')
     input_image1 = 'DAPI.tif'
     datastore.get_instance(input_path1,'/rt106/input', input_image1, 'tiff16')
-
-    if 'channel' in context:
-        input_path2 = datastore.get_pathology_primary_path(context['slide'], context['region'], context['channel'])
-        logging.info('input_path2 %s' % input_path2)
-        input_image2 = 'Cell.tif'
-        input_file2 = '/rt106/input/%s' % input_image2
-        datastore.get_instance(input_path2,'/rt106/input', input_image2, 'tiff16')
-   
+    
     output_path1 = datastore.get_pathology_result_path(context['slide'], context['region'], context['branch'], 'NucSeg')
     output_image1 = 'NucSeg.tif'
     output_file1 = '/rt106/output/%s' % output_image1
@@ -68,17 +55,12 @@ def run_algorithm(datastore, context):
     #       (Asynchronism and parallelism are handled elsewhere.)
 
     try:
-        input_args = '/rt106/input/DAPI.tif ' + output_file1 + " " + \
-            str(context['minLevel']) + " " + str(context['maxLevel']) + " " + \
-            str(context['smoothingSigma']) + " " + str(context['maxCytoplasmThickness'])
-        # add model and json files to input/model directory
-
-        if 'channel' in context:
-            input_args = input_args + " " + input_file2 + " " + str(context['cellSegSensitivity'])
+        input_args = '/rt106/input/DAPI.tif ' + output_file1 + " " + str(context['patchSize']) + " " + \
+            str(context['minLevel']) + " " + str(context['maxLevel'])
 
         logging.info('input_args %s' % input_args)
         run_algorithm = '/usr/bin/python3 testDAPISeg.py %s' % (input_args)
-        # run_algorithm = '/usr/bin/python3 testDAPISeg.py'
+
         logging.info('run Algorithm: %r' % run_algorithm)
         subprocess.check_call(run_algorithm, shell=True)
     except subprocess.CalledProcessError, e:

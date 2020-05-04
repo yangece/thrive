@@ -254,7 +254,7 @@ def start_req_queue():
     logging.debug('[*] waiting for messages.')
     try:
         channel.start_consuming()
-    except pika.exceptions.ConnectionClosed, e:
+    except pika.exceptions.ConnectionClosed as e:
         logging.info('client connection is closed')
 
 logging.basicConfig(format='%(levelname)s:%(name)s %(message)s', level=logging.DEBUG)

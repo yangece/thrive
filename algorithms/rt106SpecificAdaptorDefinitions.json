@@ -51,25 +51,13 @@
       "type" : "number",
       "default" : 5
     },
-    "smoothingSigma" : {
-      "label" : "Smoothing Sigma",
+    "patchSize" : {
+      "label" : "Patch Size",
       "description" : "",
       "type" : "number",
-      "default" : 1
-    },
-    "maxCytoplasmThickness" : {
-      "label" : "Max Cytoplasm Thickness",
-      "description" : "",
-      "type" : "number",
-      "default" : 3
-    },
-    "cellSegSensitivity" : {
-      "label" : "Cell Segmentation Sensitivity",
-      "description" : "",
-      "type" : "number",
-      "default" : 2
-    },
-    "required" : ["slide", "region", "branch", "force", "dapi_channel", "minLevel", "maxLevel", "smoothingSigma", "maxCytoplasmThickness"]
+      "default" : 400
+    },    
+    "required" : ["slide", "region", "branch", "force", "dapi_channel", "patchSize", "minLevel", "maxLevel"]
   },
   "results" : {
     "nucleiImage" : {
